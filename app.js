@@ -1,4 +1,3 @@
-// Default initial mock items matching the uploaded sample structure
 let meals = JSON.parse(localStorage.getItem('pwa_meals')) || [
     { id: 1, category: 'Breakfast', name: 'Kerabu Sayur', cal: 150 },
     { id: 2, category: 'Breakfast', name: 'Telu Rebus 1Biji', cal: 80 },
@@ -31,6 +30,7 @@ const saveFoodBtn = document.getElementById('save-food');
 const foodCategory = document.getElementById('food-category');
 const foodName = document.getElementById('food-name');
 const foodCal = document.getElementById('food-cal');
+const resetBtn = document.getElementById('reset-btn');
 
 function calculate() {
     const w = parseFloat(weightInput.value) || 0;
@@ -40,8 +40,6 @@ function calculate() {
     const activityFactor = parseFloat(activitySelect.value);
 
     // Mifflin-St Jeor Formula
-    // Man: (10 x weight) + (6.25 x height) - (5 x age) + 5
-    // Woman: (10 x weight) + (6.25 x height) - (5 x age) - 161
     let bmr = (10 * w) + (6.25 * h) - (5 * a);
     if (gender === 'male') {
         bmr += 5;
@@ -121,17 +119,15 @@ saveFoodBtn.addEventListener('click', () => {
     }
 });
 
-const resetBtn = document.getElementById('reset-btn');
-
+// Reset Button Logic (Restores default baseline values instead of emptying them)
 resetBtn.addEventListener('click', () => {
-    weightInput.value = '';
-    heightInput.value = '';
-    ageInput.value = '';
-    genderSelect.value = '';
-    activitySelect.value = '';
+    weightInput.value = '91.3';
+    heightInput.value = '144';
+    ageInput.value = '45';
+    genderSelect.value = 'female';
+    activitySelect.value = '1.375';
     calculate();
 });
-
 
 // Initial run
 calculate();
