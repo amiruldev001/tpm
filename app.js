@@ -121,10 +121,10 @@ saveFoodBtn.addEventListener('click', () => {
 
 // Reset Button Logic (Restores default baseline values instead of emptying them)
 resetBtn.addEventListener('click', () => {
-    weightInput.value = '91.3';
-    heightInput.value = '144';
-    ageInput.value = '45';
-    genderSelect.value = 'female';
+    weightInput.value = '0';
+    heightInput.value = '0';
+    ageInput.value = '0';
+    genderSelect.value = 'male';
     activitySelect.value = '1.375';
     calculate();
 });
