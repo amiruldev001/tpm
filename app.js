@@ -124,11 +124,11 @@ saveFoodBtn.addEventListener('click', () => {
 const resetBtn = document.getElementById('reset-btn');
 
 resetBtn.addEventListener('click', () => {
-    weightInput.value = '91.3';
-    heightInput.value = '144';
-    ageInput.value = '45';
-    genderSelect.value = 'female';
-    activitySelect.value = '1.375';
+    weightInput.value = '';
+    heightInput.value = '';
+    ageInput.value = '';
+    genderSelect.value = '';
+    activitySelect.value = '';
     calculate();
 });
 
