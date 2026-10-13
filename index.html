@@ -1,126 +1,214 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calorie & TDEE Tracker PWA</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4f46e5">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="description" content="Semak Indeks Pencemaran Udara (IPU) Malaysia berdasarkan lokasi anda.">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <title>IPU Malaysia</title>
+  <style>
+    :root{color-scheme:light;--bg:#f3f7f6;--card:#fff;--text:#16302d;--muted:#637773;--line:#dce8e5;--brand:#0f766e;--shadow:0 12px 34px #0c40300d}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    body.dark{color-scheme:dark;--bg:#0b1716;--card:#132321;--text:#e7f2ef;--muted:#a0b8b2;--line:#29413d;--brand:#5eead4;--shadow:0 12px 34px #0003}
+    .wrap{max-width:760px;margin:auto;padding:20px 16px 36px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}
+    .brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:14px;background:var(--brand);display:grid;place-items:center;color:#fff;font-size:23px}
+    h1{font-size:1.22rem;margin:0}.sub{font-size:.85rem;color:var(--muted);margin-top:3px}
+    button,select{font:inherit}button{border:0;border-radius:13px;padding:12px 15px;background:var(--brand);color:#fff;font-weight:700;cursor:pointer}
+    button.secondary{background:var(--card);color:var(--text);border:1px solid var(--line)}button:disabled{opacity:.55;cursor:wait}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:var(--shadow);margin-bottom:14px}
+    .hero{position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:160px;height:160px;border-radius:50%;right:-55px;top:-70px;background:currentColor;opacity:.035}
+    .eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;font-weight:800;color:var(--muted)}
+    .reading{display:flex;align-items:center;gap:18px;margin:12px 0 8px}.number{font-size:clamp(4rem,20vw,6.4rem);font-weight:850;line-height:1;letter-spacing:-.07em}
+    .status{font-size:1.08rem;font-weight:800}.statuspill{display:inline-flex;padding:6px 10px;border-radius:99px;background:#e6f5ec;color:#17663b;font-size:.82rem;font-weight:800;margin-top:8px}
+    body.dark .statuspill{background:#173c2b;color:#9df0bb}.note{color:var(--muted);font-size:.9rem;line-height:1.55}
+    .actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}.actions button{flex:1;min-width:145px}
+    .section-title{font-size:1rem;font-weight:800;margin:0 0 12px}.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .mini{border:1px solid var(--line);border-radius:15px;padding:13px}.mini strong{display:block;font-size:.98rem;margin-bottom:5px}.mini span{font-size:.8rem;color:var(--muted)}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}
+    select{width:100%;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:8px}
+    .notice{padding:12px 14px;border-radius:14px;background:#fff7df;color:#78550b;font-size:.84rem;line-height:1.5}body.dark .notice{background:#3a3018;color:#f8dfa0}
+    .error{color:#b42318}.footer{text-align:center;font-size:.78rem;color:var(--muted);padding:10px 8px 0}.hidden{display:none!important}
+    a{color:var(--brand)}.loading{display:inline-block;width:15px;height:15px;border:2px solid #ffffff66;border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:7px}@keyframes spin{to{transform:rotate(360deg)}}
+    @media(min-width:600px){.wrap{padding-top:30px}.card{padding:24px}.hero{padding:28px}}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Daily Calorie Tracker</h1>
-            <p>Mifflin-St Jeor & TDEE Calculator</p>
-        </header>
+  <main class="wrap">
+    <header class="top">
+      <div class="brand"><div class="logo">〰</div><div><h1>IPU Malaysia</h1><div class="sub">Pantau kualiti udara di sekitar anda</div></div></div>
+      <button id="themeBtn" class="secondary" aria-label="Tukar tema">☾</button>
+    </header>
 
-        <section class="card">
-            <h2>Profil & TDEE</h2>
-            <div class="grid-2">
-                <div class="input-group">
-                    <label for="weight">Berat (kg)</label>
-                    <input type="number" id="weight" value="91.3" step="0.1">
-                </div>
-                <div class="input-group">
-                    <label for="height">Tinggi (cm)</label>
-                    <input type="number" id="height" value="144">
-                </div>
-                <div class="input-group">
-                    <label for="age">Umur</label>
-                    <input type="number" id="age" value="45">
-                </div>
-                <div class="input-group">
-                    <label for="gender">Jantina</label>
-                    <select id="gender">
-                        <option value="female" selected>Perempuan (F)</option>
-                        <option value="male">Lelaki (M)</option>
-                    </select>
-                </div>
-            </div>
-            <div class="input-group full-width">
-                <label for="activity">Tahap Aktiviti (TDEE)</label>
-                <select id="activity">
-                    <option value="1.2">Sedentari (Duduk sahaja, kerja pejabat) - 1.2</option>
-                    <option value="1.375" selected>Aktif Ringan (Senaman 1-3 hari/minggu) - 1.375</option>
-                    <option value="1.55">Aktif Sederhana (Senaman 3-5 hari/minggu) - 1.55</option>
-                    <option value="1.725">Sangat Aktif (Senaman 6-7 hari/minggu) - 1.725</option>
-                    <option value="1.9">Ekstrem Aktif (Atlet / 2x latihan sehari) - 1.9</option>
-                </select>
-            </div>
-            
-            <div class="input-group full-width" style="margin-top: 12px;">
-                <button id="reset-btn" class="btn-secondary" style="width: 100%;">Tetapkan Semula (Reset)</button>
-            </div>
-        </section>
+    <section class="card hero">
+      <div class="eyebrow">Indeks Pencemaran Udara (IPU)</div>
+      <div class="reading"><div id="ipu" class="number">--</div><div><div id="category" class="status">Belum dimuatkan</div><div id="pill" class="statuspill">Menunggu lokasi</div></div></div>
+      <div id="station" class="status">Stesen pemantauan terdekat</div>
+      <p id="updated" class="note">Tekan butang di bawah untuk mendapatkan bacaan terkini daripada sumber rasmi.</p>
+      <div class="actions"><button id="locBtn">◎ Guna lokasi saya</button><button id="refreshBtn" class="secondary">↻ Muat semula</button></div>
+    </section>
 
-        <section class="stats-grid">
-            <div class="stat-card">
-                <h3>BMR</h3>
-                <p id="bmr-val">0</p>
-                <span>kcal</span>
-            </div>
-            <div class="stat-card">
-                <h3>TDEE (Needs)</h3>
-                <p id="tdee-val">0</p>
-                <span>kcal</span>
-            </div>
-            <div class="stat-card">
-                <h3>Intake</h3>
-                <p id="intake-val">0</p>
-                <span>kcal</span>
-            </div>
-            <div class="stat-card highlight">
-                <h3>Cal Deficit</h3>
-                <p id="deficit-val">0</p>
-                <span>kcal</span>
-            </div>
-        </section>
+    <section class="card">
+      <h2 class="section-title">Pilih stesen secara manual</h2>
+      <div class="note">Jika anda tidak mahu berkongsi lokasi, pilih stesen pemantauan yang berdekatan.</div>
+      <select id="stationSelect" aria-label="Pilih stesen"><option value="">Memuatkan senarai stesen…</option></select>
+      <div class="actions"><button id="chooseBtn" class="secondary">Semak stesen dipilih</button></div>
+    </section>
 
-        <section class="card">
-            <div class="section-header">
-                <h2>Senarai Makanan Harian</h2>
-                <button id="add-item-btn" class="btn-primary">+ Tambah Makanan</button>
-            </div>
-            
-            <div id="meal-container">
-                </div>
-        </section>
-    </div>
+    <section class="card">
+      <h2 class="section-title">Panduan bacaan IPU</h2>
+      <div class="info-grid">
+        <div class="mini"><strong>0–50 · Baik</strong><span>Kualiti udara memuaskan.</span></div>
+        <div class="mini"><strong>51–100 · Sederhana</strong><span>Umumnya boleh diterima.</span></div>
+        <div class="mini"><strong>101–200 · Tidak sihat</strong><span>Kurangkan aktiviti luar yang berat.</span></div>
+        <div class="mini"><strong>201–300 · Sangat tidak sihat</strong><span>Hadkan pendedahan di luar.</span></div>
+        <div class="mini"><strong>Lebih 300 · Berbahaya</strong><span>Elakkan aktiviti luar dan ikuti arahan rasmi.</span></div>
+        <div class="mini"><strong>Tiada data</strong><span>Stesen mungkin belum melaporkan bacaan.</span></div>
+      </div>
+    </section>
 
-    <div id="food-modal" class="modal">
-        <div class="modal-content">
-            <h3>Tambah Makanan / Minuman</h3>
-            <div class="input-group">
-                <label for="food-category">Waktu Makan</label>
-                <select id="food-category">
-                    <option value="Breakfast">Breakfast</option>
-                    <option value="Snack am">Snack am</option>
-                    <option value="Lunch">Lunch</option>
-                    <option value="Snack pm">Snack pm</option>
-                    <option value="Dinner">Dinner</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="food-name">Nama Makanan</label>
-                <input type="text" id="food-name" placeholder="Cth: Kerabu Sayur">
-            </div>
-            <div class="input-group">
-                <label for="food-cal">Kalori (kcal)</label>
-                <input type="number" id="food-cal" placeholder="Cth: 150">
-            </div>
-            <div class="modal-actions">
-                <button id="close-modal" class="btn-secondary">Batal</button>
-                <button id="save-food" class="btn-primary">Simpan</button>
-            </div>
-        </div>
-    </div>
+    <div class="notice">Bacaan ini ialah maklumat pemantauan, bukan nasihat perubatan. Jika jerebu teruk, kurangkan aktiviti luar, tutup tingkap apabila sesuai dan ikuti arahan Jabatan Alam Sekitar/Kementerian Kesihatan.</div>
+    <div class="footer">Sumber bacaan: Jabatan Alam Sekitar Malaysia (APIMS).<br><a href="https://eqms.doe.gov.my/apims/main" target="_blank" rel="noopener">Buka portal rasmi APIMS ↗</a><br><span id="sourceTime">Data dimuatkan daripada sumber dalam talian.</span></div>
+  </main>
+<script>
+(() => {
+  const API_URL = "https://eqms.doe.gov.my/api3/publicmapproxy/PUBLIC_DISPLAY/CAQM_MCAQM_Current_Reading/MapServer/0/query?f=json&where=1%3D1&outFields=*&returnGeometry=true&outSR=4326";
+  const $ = id => document.getElementById(id);
+  let stations = [];
+  const savedTheme = localStorage.getItem("ipu-theme");
+  if (savedTheme === "dark") document.body.classList.add("dark");
+  $("themeBtn").textContent = document.body.classList.contains("dark") ? "☀" : "☾";
+  $("themeBtn").addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    const dark = document.body.classList.contains("dark");
+    localStorage.setItem("ipu-theme", dark ? "dark" : "light");
+    $("themeBtn").textContent = dark ? "☀" : "☾";
+  });
 
-    <script src="app.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-    </script>
+  function val(obj, keys) {
+    for (const key of keys) if (obj && obj[key] !== undefined && obj[key] !== null && obj[key] !== "") return obj[key];
+    return null;
+  }
+  function normalize(feature) {
+    const a = feature.attributes || feature;
+    const g = feature.geometry || {};
+    return {
+      raw:a,
+      id: val(a,["STATION_ID","station_id","StationID","OBJECTID"]) ?? Math.random().toString(36).slice(2),
+      name: val(a,["STATION_LOCATION","station_location","LOCATION","Location","STATION_NAME","PLACE","NAME"]) || "Stesen pemantauan",
+      state: val(a,["STATE_NAME","state_name","STATE"]) || "",
+      api: Number(val(a,["API","api","IPU","AQI"])),
+      category: val(a,["CLASS","class","CATEGORY","category"]) || "",
+      timestamp: val(a,["DATETIME","datetime","DATE_TIME","LAST_UPDATE"]),
+      lat: Number(val(a,["LATITUDE","latitude","LAT","lat"]) ?? g.y),
+      lon: Number(val(a,["LONGITUDE","longitude","LON","lon"]) ?? g.x)
+    };
+  }
+  function categoryFor(n) {
+    if (!Number.isFinite(n)) return "Tiada bacaan";
+    if (n <= 50) return "Baik";
+    if (n <= 100) return "Sederhana";
+    if (n <= 200) return "Tidak sihat";
+    if (n <= 300) return "Sangat tidak sihat";
+    return "Berbahaya";
+  }
+  function colorFor(n) {
+    if (!Number.isFinite(n)) return "#637773";
+    if (n <= 50) return "#17834a";
+    if (n <= 100) return "#a87900";
+    if (n <= 200) return "#c2410c";
+    if (n <= 300) return "#b42318";
+    return "#6b21a8";
+  }
+  function formatDate(value) {
+    if (!value) return "Masa kemas kini tidak disediakan oleh sumber.";
+    let d = typeof value === "number" ? new Date(value) : new Date(value);
+    if (!Number.isFinite(d.getTime())) return "Masa kemas kini tidak dapat dipastikan.";
+    return "Kemas kini: " + d.toLocaleString("ms-MY",{dateStyle:"medium",timeStyle:"short"});
+  }
+  function showStation(s, extra="") {
+    const n = Number.isFinite(s.api) ? s.api : NaN;
+    $("ipu").textContent = Number.isFinite(n) ? Math.round(n) : "—";
+    $("category").textContent = categoryFor(n);
+    $("pill").textContent = categoryFor(n);
+    $("pill").style.background = colorFor(n) + "20";
+    $("pill").style.color = colorFor(n);
+    $("station").textContent = s.name + (s.state ? ", " + s.state : "");
+    $("updated").textContent = formatDate(s.timestamp) + (extra ? " · " + extra : "");
+    $("sourceTime").textContent = "Sumber: Jabatan Alam Sekitar Malaysia (APIMS).";
+  }
+  function distanceKm(lat1,lon1,lat2,lon2) {
+    const r = Math.PI/180, dLat=(lat2-lat1)*r, dLon=(lon2-lon1)*r;
+    const a=Math.sin(dLat/2)**2+Math.cos(lat1*r)*Math.cos(lat2*r)*Math.sin(dLon/2)**2;
+    return 6371*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  }
+  async function loadStations() {
+    $("refreshBtn").disabled = true;
+    $("refreshBtn").textContent = "Memuatkan…";
+    try {
+      const response = await fetch(API_URL, {cache:"no-store"});
+      if (!response.ok) throw new Error("Sumber data membalas HTTP " + response.status);
+      const json = await response.json();
+      if (json.error) throw new Error(json.error.message || "Ralat daripada sumber data");
+      stations = (json.features || []).map(normalize).filter(s => Number.isFinite(s.lat) && Number.isFinite(s.lon));
+      if (!stations.length) throw new Error("Tiada data stesen diterima. Cuba portal rasmi APIMS.");
+      stations.sort((a,b) => a.name.localeCompare(b.name, "ms"));
+      const select = $("stationSelect");
+      select.innerHTML = '<option value="">— Pilih stesen —</option>';
+      stations.forEach((s,i) => {
+        const option=document.createElement("option");
+        option.value=String(i);
+        option.textContent=s.name+(s.state ? " · "+s.state : "")+" · IPU "+(Number.isFinite(s.api)?Math.round(s.api):"—");
+        select.appendChild(option);
+      });
+      const first = stations.find(s => Number.isFinite(s.api));
+      if (first) showStation(first, "Pilih lokasi anda untuk mencari stesen terdekat");
+      $("sourceTime").textContent = "Berjaya memuatkan " + stations.length + " stesen daripada APIMS.";
+    } catch (err) {
+      $("ipu").textContent = "—";
+      $("category").textContent = "Data tidak tersedia";
+      $("pill").textContent = "Semak sambungan";
+      $("station").textContent = "Tidak dapat menghubungi sumber bacaan";
+      $("updated").innerHTML = '<span class="error"></span>' + err.message + " Jika berterusan, buka portal rasmi APIMS.";
+      $("sourceTime").textContent = "Data tidak dimuatkan. Tiada bacaan direka atau dianggarkan.";
+    } finally {
+      $("refreshBtn").disabled = false;
+      $("refreshBtn").textContent = "↻ Muat semula";
+    }
+  }
+  function locate() {
+    if (!navigator.geolocation) { alert("Pelayar ini tidak menyokong lokasi. Sila pilih stesen secara manual."); return; }
+    if (!stations.length) { alert("Senarai stesen belum dimuatkan. Cuba muat semula dahulu."); return; }
+    $("locBtn").disabled = true; $("locBtn").textContent = "Mendapatkan lokasi…";
+    navigator.geolocation.getCurrentPosition(pos => {
+      const {latitude,longitude}=pos.coords;
+      const nearest=stations.reduce((best,s) => {
+        const d=distanceKm(latitude,longitude,s.lat,s.lon);
+        return !best || d<best.d ? {s,d} : best;
+      },null);
+      showStation(nearest.s, "Anggaran jarak garis lurus " + nearest.d.toFixed(1) + " km dari lokasi anda");
+      const idx=stations.indexOf(nearest.s); $("stationSelect").value=String(idx);
+      $("locBtn").disabled=false; $("locBtn").textContent="◎ Guna lokasi saya";
+    }, err => {
+      let msg = err.code===1 ? "Kebenaran lokasi ditolak." : err.code===2 ? "Lokasi tidak dapat dikenal pasti." : "Permintaan lokasi tamat masa.";
+      alert(msg + " Anda masih boleh memilih stesen secara manual.");
+      $("locBtn").disabled=false; $("locBtn").textContent="◎ Guna lokasi saya";
+    }, {enableHighAccuracy:true,timeout:12000,maximumAge:300000});
+  }
+  $("locBtn").addEventListener("click", locate);
+  $("refreshBtn").addEventListener("click", loadStations);
+  $("chooseBtn").addEventListener("click", () => {
+    const i=$("stationSelect").value;
+    if (i==="") { alert("Sila pilih stesen dahulu."); return; }
+    showStation(stations[Number(i)], "Stesen dipilih secara manual");
+  });
+  if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(console.warn));
+  }
+  loadStations();
+})();
+</script>
 </body>
 </html>
