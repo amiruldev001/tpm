@@ -75,6 +75,9 @@
 <script>
 (() => {
   const API_URL = "https://eqms.doe.gov.my/api3/publicmapproxy/PUBLIC_DISPLAY/CAQM_MCAQM_Current_Reading/MapServer/0/query?f=json&where=1%3D1&outFields=*&returnGeometry=true&outSR=4326";
+  // Try the official endpoint first, then a public CORS relay if the browser blocks it.
+  // Public relays are third-party services and may be rate-limited or unavailable.
+  const CORS_RELAY = "https://api.allorigins.win/raw?url=" + encodeURIComponent(API_URL);
   const $ = id => document.getElementById(id);
   let stations = [];
   const savedTheme = localStorage.getItem("ipu-theme");
@@ -148,9 +151,17 @@
     $("refreshBtn").disabled = true;
     $("refreshBtn").textContent = "Memuatkan…";
     try {
-      const response = await fetch(API_URL, {cache:"no-store"});
-      if (!response.ok) throw new Error("Sumber data membalas HTTP " + response.status);
-      const json = await response.json();
+      let response, json, firstError;
+      try {
+        response = await fetch(API_URL, {cache:"no-store"});
+        if (!response.ok) throw new Error("Sumber rasmi membalas HTTP " + response.status);
+        json = await response.json();
+      } catch (err) {
+        firstError = err;
+        response = await fetch(CORS_RELAY, {cache:"no-store"});
+        if (!response.ok) throw new Error("Sumber rasmi tidak dapat dicapai (" + (firstError.message || "fetch gagal") + ") dan relay juga membalas HTTP " + response.status);
+        json = await response.json();
+      }
       if (json.error) throw new Error(json.error.message || "Ralat daripada sumber data");
       stations = (json.features || []).map(normalize).filter(s => Number.isFinite(s.lat) && Number.isFinite(s.lon));
       if (!stations.length) throw new Error("Tiada data stesen diterima. Cuba portal rasmi APIMS.");
@@ -171,7 +182,7 @@
       $("category").textContent = "Data tidak tersedia";
       $("pill").textContent = "Semak sambungan";
       $("station").textContent = "Tidak dapat menghubungi sumber bacaan";
-      $("updated").innerHTML = '<span class="error"></span>' + err.message + " Jika berterusan, buka portal rasmi APIMS.";
+      $("updated").textContent = err.message + " Jika berterusan, buka portal rasmi APIMS.";
       $("sourceTime").textContent = "Data tidak dimuatkan. Tiada bacaan direka atau dianggarkan.";
     } finally {
       $("refreshBtn").disabled = false;
